@@ -7,6 +7,7 @@ import logging
 
 import models
 import db
+import utils
 
 app_api = FastAPI()
 logger = logging.getLogger(__name__)
@@ -28,25 +29,21 @@ def home():
     # return JSONResponse(content={'Hello': 'world'}, headers=headers, status_code=200)
 
 
-@app_api.get('/predict/demand')
-def predict_demand(body: models.PredictDemandRequest) -> models.PredictDemandResponse:
+@app_api.post('/predict/demand')
+def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
     # TODO implement function
     days_ago = 7  # days ago from now
-    days_predict = None
+    days_predict = utils.get_days_by_type_predict(body.type_predict)
     now = dt.date.today()
 
-    if body.type_predict.startswith('долго'):
-        days_predict = 365
-    elif body.type_predict.startswith('средне'):
-        days_predict = 150
-    elif body.type_predict.startswith('кратко'):
-        days_predict = 30
-    else:
-        logger.error(f'bad request type {body.type_predict}')
-        days_predict = 1
-
-    resp = models.PredictDemandResponse()
-    resp.dates = [(now + dt.timedelta(days=ds)).strftime('%d-%m-%Y') for ds in range(-days_ago, days_predict + 1)]
-    resp.demands = [randint(0, 1000) for d in range(-days_ago, days_predict + 1)]
+    resp = models.PredictDemandResponse(
+        dates=[(now + dt.timedelta(days=ds)).strftime('%d-%m-%Y') for ds in range(-days_ago, days_predict + 1)],
+        demands=[randint(0, 1000) for _ in range(-days_ago, days_predict + 1)]
+    )
 
     return resp
+
+
+@app_api.post('/predict/price')
+def predict_price(body: models.PredictRequest) -> models.PredictPriceResponse:
+    pass
