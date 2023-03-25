@@ -2,7 +2,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from typing import List
 
-from data import TimeSeria
+from .data import TimeSeria
 
 
 class BaseModel:

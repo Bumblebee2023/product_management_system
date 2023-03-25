@@ -13,12 +13,12 @@ class PredictDemandResponse(BaseModel):
     demands: List[int]
 
 
-class _Demand:
+class _Demand(BaseModel):
     prices: List[int]
     demands: List[int]
 
 
-class _Profit:
+class _Profit(BaseModel):
     prices: List[int]
     profits: List[int]
 

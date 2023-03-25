@@ -9,7 +9,7 @@ import bestconfig
 import models
 import db
 import utils
-from ml import data, base_model
+from ml import BaseModel, TimeSeria
 
 app_api = FastAPI()
 logger = logging.getLogger(__name__)
@@ -40,13 +40,13 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
     history = db.get_history_demand(body.name_product,
                                     body.id_market,
                                     dt.timedelta(int(config.int('time-window-years'))))
-    ts = data.TimeSeria()
+    ts = TimeSeria()
     for i in range(len(history['dates'])):
         ts.add_value(history['dates'][i], history['demands'][i])
 
     resp = models.PredictDemandResponse(
         dates=history['dates'],
-        demands=list(map(int, base_model.BaseModel().predict(ts, days_predict)))
+        demands=list(map(int, BaseModel().predict(ts, days_predict)))
     )
 
     return resp
