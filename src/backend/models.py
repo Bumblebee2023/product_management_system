@@ -2,6 +2,12 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
-class NewUserTg(BaseModel):
-    user_tg_id: int
-    username: str
+class PredictDemandRequest(BaseModel):
+    name_product: str
+    type_predict: str
+    id_market: Optional[str]
+
+
+class PredictDemandResponse(BaseModel):
+    dates: List[str]
+    demands: List[int]
