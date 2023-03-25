@@ -54,4 +54,5 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
 
 @app_api.post('/predict/price')
 def predict_price(body: models.PredictRequest) -> models.PredictPriceResponse:
-    pass
+    # TODO implement function
+    raise HTTPException(status_code=401)

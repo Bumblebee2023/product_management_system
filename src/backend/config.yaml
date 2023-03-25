@@ -1,2 +1,2 @@
-mongodb-config-path: "~/markinghack/settings/mongo.conf.yaml"
+mongodb-config-path: "/markinghack/settings/mongo.conf.yaml"
 time-window-years: 5
