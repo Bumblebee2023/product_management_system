@@ -54,6 +54,6 @@ export const data = {
     ],
 };
 
-export function Chart() {
+export function Chart(): JSX.Element {
     return <Line options={options} data={data} />;
 }

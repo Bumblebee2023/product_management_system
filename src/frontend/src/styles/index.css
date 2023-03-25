@@ -1,0 +1,20 @@
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.app {
+    background-color: rgb(235,199,81)
+}
+
+.main {
+    border-radius: 10% 10% 0 0;
+    background: rgb(248, 248, 248);
+}
+
+.container {
+    height: 100vh;
+    border-radius: 10%;
+}
