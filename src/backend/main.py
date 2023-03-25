@@ -39,7 +39,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
 
     history = db.get_history_demand(body.name_product,
                                     body.id_market,
-                                    dt.timedelta(int(config.int('time-window-years'))))
+                                    dt.timedelta(days=int(config.int('time-window-years')) * 365))
     ts = TimeSeria()
     for i in range(len(history['dates'])):
         ts.add_value(history['dates'][i], history['demands'][i])
