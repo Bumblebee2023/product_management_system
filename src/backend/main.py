@@ -4,13 +4,16 @@ from random import randint
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+import bestconfig
 
 import models
 import db
 import utils
+from ml import data, base_model
 
 app_api = FastAPI()
 logger = logging.getLogger(__name__)
+config = bestconfig.Config()
 
 origins = ["*"]
 
@@ -32,13 +35,18 @@ def home():
 @app_api.post('/predict/demand')
 def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
     # TODO implement function
-    days_ago = 7  # days ago from now
     days_predict = utils.get_days_by_type_predict(body.type_predict)
-    now = dt.date.today()
+
+    history = db.get_history_demand(body.name_product,
+                                    body.id_market,
+                                    dt.timedelta(int(config.int('time-window-years'))))
+    ts = data.TimeSeria()
+    for i in range(len(history['dates'])):
+        ts.add_value(history['dates'][i], history['demands'][i])
 
     resp = models.PredictDemandResponse(
-        dates=[(now + dt.timedelta(days=ds)).strftime('%d-%m-%Y') for ds in range(-days_ago, days_predict + 1)],
-        demands=[randint(0, 1000) for _ in range(-days_ago, days_predict + 1)]
+        dates=history['dates'],
+        demands=list(map(int, base_model.BaseModel().predict(ts, days_predict)))
     )
 
     return resp
