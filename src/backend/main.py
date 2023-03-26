@@ -119,7 +119,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 pr_day.strftime('%m-%d'))
             answ = m.predict_medium(
                 [d[1] for d in data],
-                db.get_last_price(body.name_product),
+                2,
                 body.name_product,
                 float("nan"),
                 strweek[pr_day.weekday()],
