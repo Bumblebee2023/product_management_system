@@ -11,7 +11,7 @@ from starlette.status import HTTP_204_NO_CONTENT
 import models
 import db
 import utils
-from ml import BaseModel, TimeSeria
+from ml import BaseModel, TimeSeria, LstmFacade
 
 middleware = [
     Middleware(
@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 config = bestconfig.Config()
 
 origins = ["*"]
+
 
 # app_api.add_middleware(
 #     CORSMiddleware,
@@ -84,25 +85,43 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
             data.append((history['dates'][i], history['demands'][i]))
         data.sort(reverse=True)
         data = data[:days_ago]
-
-        ts = TimeSeria()
-        for i in range(len(history['dates'])):
-            ts.add_value(history['dates'][i], history['demands'][i])
-
-        predict = list(map(int, BaseModel().predict(ts, days_predict)))
+        m = LstmFacade()
+        pr_day = (dt.datetime.strptime(data[0][0], '%Y-%m-%d') + dt.timedelta(days=1))
+        strweek = ["Понедельник",
+                   "Вторник",
+                   "Среда",
+                   "Четверг",
+                   "Пятница",
+                   "Суббота",
+                   "Воскресенье"]
+        answ = []
+        if days_predict == 1:
+            answ = [m.predict(
+                [d[1] for d in data],
+                db.get_last_price(body.name_product),
+                body.name_product,
+                float("nan"),
+                strweek[pr_day.weekday()],
+                pr_day.strftime('%m-%d')
+            )]
+        # ts = TimeSeria()
+        # for i in range(len(history['dates'])):
+        #     ts.add_value(history['dates'][i], history['demands'][i])
+        #
+        # predict = list(map(int, BaseModel().predict(ts, days_predict)))
         now = dt.date.today()
         resp = models.PredictDemandResponse(
-            dates=[(now + dt.timedelta(days=d + 1)).strftime('%Y-%m-%d') for d in range(len(predict))],
-            demands=predict
+            dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days_predict)],
+            demands=[d[1] for d in data] + answ
         )
 
         return resp
     except Exception as e:
         print(e)
     return models.PredictDemandResponse(
-            dates=[],
-            demands=[]
-        )
+        dates=[],
+        demands=[]
+    )
 
 
 @app_api.get('/categories')

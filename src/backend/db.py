@@ -33,7 +33,7 @@ def get_history_demand(name_product: str, id_market: str, time_window: dt.timede
         for line in history:
             data['dates'].append(line['_id'])
             data['demands'].append(line['count'])
-        data['dates'] = list(utils.data_in_int(data['dates']))
+        # data['dates'] = list(utils.data_in_int(data['dates']))
         return data
     except Exception as e:
         print(e)
@@ -49,10 +49,19 @@ def get_product_categories():
     return prods[:50]
 
 
+def get_last_price(id_pr):
+    try:
+        coll = _connect_mongo('markinghack')[f'transactions_6B8E111AB5B5C556C0AEA292ACA4D88B']
+        a = list(coll.find({'id_product': id_pr}).sort(key_or_list='dt', direction=pymongo.DESCENDING).limit(1))[0]
+        return a['price'] // 100
+    except:
+        return 0
+
+
 if __name__ == "__main__":
     from pprint import pprint
 
     # pprint(get_history_demand('18AA2603B271C19A581133BD34319311',
     #                          '6B8E111AB5B5C556C0AEA292ACA4D88B',
     #                          dt.timedelta(days=150)))
-    pprint(get_product_categories())
+    pprint(get_last_price('18AA2603B271C19A581133BD34319311'))
