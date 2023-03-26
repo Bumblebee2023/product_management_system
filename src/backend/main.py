@@ -5,25 +5,35 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import bestconfig
+from starlette.middleware import Middleware
 
 import models
 import db
 import utils
 from ml import BaseModel, TimeSeria
 
-app_api = FastAPI()
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*']
+    )
+]
+app_api = FastAPI(middleware=middleware)
 logger = logging.getLogger(__name__)
 config = bestconfig.Config()
 
 origins = ["*"]
 
-app_api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["POST", "GET"],
-    allow_headers=["*"],
-)
+# app_api.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["POST", "GET"],
+#     allow_headers=["*"],
+# )
 
 
 # @app_api.options("/{path:path}")
