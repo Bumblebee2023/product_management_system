@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 import bestconfig
 from starlette.middleware import Middleware
+from starlette.status import HTTP_204_NO_CONTENT
 
 import models
 import db
@@ -19,7 +20,6 @@ middleware = [
         allow_credentials=True,
         allow_methods=['*'],
         allow_headers=['*'],
-        preflight_continue=True,
     )
 ]
 app_api = FastAPI(middleware=middleware)
@@ -35,6 +35,14 @@ origins = ["*"]
 #     allow_methods=["POST", "GET"],
 #     allow_headers=["*"],
 # )
+
+@app_api.options("/{path:path}")
+def options_path(response: Response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.status_code = HTTP_204_NO_CONTENT
+    return response
 
 
 @app_api.middleware("http")
