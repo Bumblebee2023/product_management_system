@@ -81,7 +81,10 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                                         dt.timedelta(days=int(config.int('time-window-years')) * 365))
         data = []
         for i in range(len(history['dates'])):
-            data.append()
+            data.append((history['dates'][i], history['demands'][i]))
+        data.sort(reverse=True)
+        data = data[:days_ago]
+
         ts = TimeSeria()
         for i in range(len(history['dates'])):
             ts.add_value(history['dates'][i], history['demands'][i])
