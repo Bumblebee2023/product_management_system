@@ -53,7 +53,7 @@ def get_last_price(id_pr):
     try:
         coll = _connect_mongo('markinghack')[f'transactions_6B8E111AB5B5C556C0AEA292ACA4D88B']
         a = list(coll.find({'id_product': id_pr}).sort(key_or_list='dt', direction=pymongo.DESCENDING).limit(1))[0]
-        return a['price'] // 100
+        return max((a['price'] / 100) / 1000, 2)
     except:
         return 0
 

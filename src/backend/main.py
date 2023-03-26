@@ -119,7 +119,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 pr_day.strftime('%m-%d'))
             answ = m.predict_medium(
                 [d[1] for d in data],
-                2,
+                db.get_last_price(body.name_product),
                 body.name_product,
                 float("nan"),
                 strweek[pr_day.weekday()],
@@ -132,6 +132,12 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 demands=[d[1] for d in data] + [answ[k] for k in sorted(answ.keys())]
             )
         else:
+            print([d[1] for d in data],
+                  db.get_last_price(body.name_product),
+                  body.name_product,
+                  float("nan"),
+                  strweek[pr_day.weekday()],
+                  pr_day.strftime('%m-%d'))
             answ = m.predict_long(
                 [d[1] for d in data],
                 db.get_last_price(body.name_product),
@@ -140,6 +146,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )
+            print(db.get_last_price(body.name_product), answ)
             resp = models.PredictDemandResponse(
                 dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in
                                               range(days_predict)],
@@ -170,7 +177,51 @@ def categories() -> models.Categories:
 
 @app_api.post('/predict/price')
 def predict_price(body: models.PredictRequest) -> models.PredictPriceResponse:
-    # TODO implement function
+    try:
+        days_ago, days_predict = utils.get_days_by_type_predict(body.type_predict)
+
+        history = db.get_history_demand(body.name_product,
+                                        body.id_market,
+                                        dt.timedelta(days=int(config.int('time-window-years')) * 365))
+        data = []
+        for i in range(len(history['dates'])):
+            data.append((history['dates'][i], history['demands'][i]))
+        data.sort(reverse=True)
+        data = data[:days_ago]
+        print(data)
+        m = LstmFacade()
+        pr_day = (dt.datetime.strptime(data[0][0], '%Y-%m-%d') + dt.timedelta(days=1))
+        strweek = ["Понедельник",
+                   "Вторник",
+                   "Среда",
+                   "Четверг",
+                   "Пятница",
+                   "Суббота",
+                   "Воскресенье"]
+        answ = []
+        pric, pred = m.optimize_price(
+            [d[1] for d in data],
+            body.name_product,
+            float("nan"),
+            strweek[pr_day.weekday()],
+            pr_day.strftime('%m-%d')
+        )
+        profs = [pric[i] * pred[i] for i in range(len(pric))]
+        resp = models.PredictPriceResponse(
+            demand=models._Demand(
+                prices=pric,
+                demands=pred
+            ),
+            profit=models._Profit(
+                prices=pric,
+                profits=profs
+            ),
+            best_price=pric[profs.index(max(profs))]
+        )
+
+        return resp
+    except Exception as e:
+        print(e)
     return models.PredictPriceResponse(
         demand=models._Demand(
             prices=[257, 154, 148, 220],
