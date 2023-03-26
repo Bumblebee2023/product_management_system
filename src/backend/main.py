@@ -37,8 +37,8 @@ origins = ["*"]
 
 
 @app_api.middleware("http")
-def cors_handler(request: Request, call_next):
-    response: Response = call_next(request)
+async def cors_handler(request: Request, call_next):
+    response: Response = await call_next(request)
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = '*'
