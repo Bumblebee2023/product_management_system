@@ -66,12 +66,72 @@ class LstmFacade:
             s = self.model(prev_values, price, gtin, item_group, day_of_the_week, date).tolist()
         return s[0][0]
 
+    def increase_date(self, date: str):
+        date = self.date_to_token[date]
+        date = (date + 1) % 365
+        for i in self.date_to_token.keys():
+            if self.date_to_token[i] == date:
+                return i
+
+    def predict_medium(self,
+                       prev_values: List[float],
+                       price: int,
+                       gtin: str,
+                       item_group: Union[str, float],
+                       day_of_the_week: str,
+                       date: str):
+        values = {}
+        for i in range(7):
+            y_pred = self.predict(prev_values, price, gtin, item_group, day_of_the_week, date)
+            values[date] = y_pred
+            prev_values.append(y_pred)
+            day_of_the_week = (self.day_to_token[day_of_the_week] + 1) % 7
+            for day in self.day_to_token.keys():
+                if self.day_to_token[day] == day_of_the_week:
+                    day_of_the_week = day
+                    break
+            date = self.increase_date(date)
+        return values
+
+    def predict_long(self,
+                     prev_values: List[float],
+                     price: int,
+                     gtin: str,
+                     item_group: Union[str, float],
+                     day_of_the_week: str,
+                     date: str):
+        values = {}
+        for i in range(30):
+            y_pred = self.predict(prev_values, price, gtin, item_group, day_of_the_week, date)
+            values[date] = y_pred
+            prev_values.append(y_pred)
+            day_of_the_week = (self.day_to_token[day_of_the_week] + 1) % 7
+            for day in self.day_to_token.keys():
+                if self.day_to_token[day] == day_of_the_week:
+                    day_of_the_week = day
+                    break
+            date = self.increase_date(date)
+        return values
+
+    def optimize_price(self,
+                       prev_values: List[float],
+                       gtin: str,
+                       item_group: Union[str, float],
+                       day_of_the_week: str,
+                       date: str):
+        prices = []
+        predicts = []
+        for price in range(1, 500):
+            y_pred = self.predict(prev_values, price, gtin, item_group, day_of_the_week, date)
+            prices.append(price)
+            predicts.append(y_pred)
+        return prices, predicts
+
 
 if __name__ == "__main__":
     m = LstmFacade()
-    print(m.predict([50, 50, 50, 60, 50, 500, 40],
-                    10,
-                    "0E6D952FEFCA3542FF2E4EB72E544D6E",
-                    float("nan"),
-                    "Воскресенье",
-                    "03-26"))
+    print(m.optimize_price([50, 50, 50, 60, 50, 500, 40],
+                         "7ACB2C0B5F5F20DE7F9908753C25DE91",
+                         float("nan"),
+                         "Воскресенье",
+                         "03-26"))

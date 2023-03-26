@@ -36,7 +36,7 @@ const FileReader = () => {
 
   return (
     <div className='file-reader'>
-      <div className='file-reader__title col'>
+      <div className='file-reader__title title col'>
         Введите данные:
       </div>
       <div className='file-reader__input col'>
