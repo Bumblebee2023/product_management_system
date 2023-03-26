@@ -6,15 +6,17 @@ html, body {
 }
 
 .app {
-    background-color: rgb(235,199,81)
+    background-color: #ebc751;
 }
 
 .main {
     border-radius: 10% 10% 0 0;
-    background: rgb(248, 248, 248);
+    background: #f8f8f8;
 }
 
 .container {
+    width: 80%;
     height: 100vh;
+    margin: 0 auto;
     border-radius: 10%;
 }
