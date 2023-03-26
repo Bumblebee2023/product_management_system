@@ -7,6 +7,7 @@ def data_in_int(data):
 
 
 def get_days_by_type_predict(type_predict: str):
+    type_predict = type_predict.lower().strip()
     if type_predict.startswith('долго'):
         days_predict = 365
     elif type_predict.startswith('средне'):

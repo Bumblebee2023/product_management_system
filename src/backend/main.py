@@ -40,16 +40,25 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
     history = db.get_history_demand(body.name_product,
                                     body.id_market,
                                     dt.timedelta(days=int(config.int('time-window-years')) * 365))
-    ts = TimeSeria()
-    for i in range(len(history['dates'])):
-        ts.add_value(history['dates'][i], history['demands'][i])
+    try:
+        ts = TimeSeria()
+        for i in range(len(history['dates'])):
+            ts.add_value(history['dates'][i], history['demands'][i])
 
-    resp = models.PredictDemandResponse(
-        dates=history['dates'],
-        demands=list(map(int, BaseModel().predict(ts, days_predict)))
-    )
+        predict = list(map(int, BaseModel().predict(ts, days_predict)))
+        now = dt.date.today()
+        resp = models.PredictDemandResponse(
+            dates=[(now + dt.timedelta(days=d + 1)).strftime('%Y-%m-%d') for d in range(len(predict))],
+            demands=predict
+        )
 
-    return resp
+        return resp
+    except Exception as e:
+        print(e)
+    return models.PredictDemandResponse(
+            dates=[],
+            demands=[]
+        )
 
 
 @app_api.post('/predict/price')
