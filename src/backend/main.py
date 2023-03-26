@@ -85,6 +85,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
             data.append((history['dates'][i], history['demands'][i]))
         data.sort(reverse=True)
         data = data[:days_ago]
+        print(data)
         m = LstmFacade()
         pr_day = (dt.datetime.strptime(data[0][0], '%Y-%m-%d') + dt.timedelta(days=1))
         strweek = ["Понедельник",
