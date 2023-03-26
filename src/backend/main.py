@@ -21,18 +21,18 @@ app_api.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    # allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app_api.options("/{path:path}")
-async def options_handler(request: Request, path: str):
-    return Response(headers={
-        "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
-        "Access-Control-Allow-Methods": ",".join(app_api.routes.get(path, [])[0].methods),
-        "Access-Control-Allow-Headers": "*",
-    })
+# @app_api.options("/{path:path}")
+# async def options_handler(request: Request, path: str):
+#     return Response(headers={
+#         "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
+#         "Access-Control-Allow-Methods": ",".join(app_api.routes.get(path, [])[0].methods),
+#         "Access-Control-Allow-Headers": "*",
+#     })
 
 
 @app_api.get('/')
