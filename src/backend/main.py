@@ -119,6 +119,21 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )
+            print(answ)
+            resp = models.PredictDemandResponse(
+                dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in
+                                              range(days_predict)],
+                demands=[d[1] for d in data] + [answ[k] for k in sorted(answ.keys())]
+            )
+        else:
+            answ = m.predict_long(
+                [d[1] for d in data],
+                db.get_last_price(body.name_product),
+                body.name_product,
+                float("nan"),
+                strweek[pr_day.weekday()],
+                pr_day.strftime('%m-%d')
+            )
             resp = models.PredictDemandResponse(
                 dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in
                                               range(days_predict)],
