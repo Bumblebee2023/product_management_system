@@ -46,7 +46,7 @@ def get_history_demand(name_product: str, id_market: str, time_window: dt.timede
 def get_product_categories():
     coll = _connect_mongo('markinghack')[f'transactions_6B8E111AB5B5C556C0AEA292ACA4D88B']
     prods = coll.distinct(key='id_product')
-    return prods[:50]
+    return ['18AA2603B271C19A581133BD34319311'] + prods[:50]
 
 
 def get_last_price(id_pr):
@@ -61,7 +61,7 @@ def get_last_price(id_pr):
 if __name__ == "__main__":
     from pprint import pprint
 
-    # pprint(get_history_demand('18AA2603B271C19A581133BD34319311',
-    #                          '6B8E111AB5B5C556C0AEA292ACA4D88B',
-    #                          dt.timedelta(days=150)))
-    pprint(get_last_price('18AA2603B271C19A581133BD34319311'))
+    pprint(get_history_demand('18AA2603B271C19A581133BD34319311',
+                             '6B8E111AB5B5C556C0AEA292ACA4D88B',
+                             dt.timedelta(days=150)))
+    # pprint(get_last_price('18AA2603B271C19A581133BD34319311'))
