@@ -64,7 +64,7 @@ class LstmFacade:
         prev_values = prev_values.reshape(*prev_values.shape, 1)
         with torch.no_grad():
             s = self.model(prev_values, price, gtin, item_group, day_of_the_week, date).tolist()
-        return s[0][0]
+        return s[0][0] * 10
 
     def increase_date(self, date: str):
         date = self.date_to_token[date]
@@ -131,7 +131,7 @@ class LstmFacade:
 if __name__ == "__main__":
     m = LstmFacade()
     print(m.optimize_price([50, 50, 50, 60, 50, 500, 40],
-                         "7ACB2C0B5F5F20DE7F9908753C25DE91",
-                         float("nan"),
-                         "Воскресенье",
-                         "03-26"))
+                           "7ACB2C0B5F5F20DE7F9908753C25DE91",
+                           float("nan"),
+                           "Воскресенье",
+                           "03-26"))
