@@ -1,0 +1,22 @@
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.app {
+    background-color: #ebc751;
+}
+
+.main {
+    border-radius: 10% 10% 0 0;
+    background: #f8f8f8;
+}
+
+.container {
+    width: 80%;
+    height: 100vh;
+    margin: 0 auto;
+    border-radius: 10%;
+}

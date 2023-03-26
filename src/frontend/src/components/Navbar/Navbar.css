@@ -1,0 +1,14 @@
+.navbar {
+    display: block;
+    width: 100%;
+    height: 100px;
+    background-color: #ebc751;
+}
+
+.navbar__title {
+    font-size: 4.2rem;
+    font-family: 'Anton', sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+}
+
