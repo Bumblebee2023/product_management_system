@@ -79,6 +79,9 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
         history = db.get_history_demand(body.name_product,
                                         body.id_market,
                                         dt.timedelta(days=int(config.int('time-window-years')) * 365))
+        data = []
+        for i in range(len(history['dates'])):
+            data.append()
         ts = TimeSeria()
         for i in range(len(history['dates'])):
             ts.add_value(history['dates'][i], history['demands'][i])
@@ -107,4 +110,14 @@ def categories() -> models.Categories:
 @app_api.post('/predict/price')
 def predict_price(body: models.PredictRequest) -> models.PredictPriceResponse:
     # TODO implement function
-    raise HTTPException(status_code=401)
+    return models.PredictPriceResponse(
+        demand=models._Demand(
+            prices=[257, 154, 148, 220],
+            demands=[24, 55, 76, 14]
+        ),
+        profit=models._Profit(
+            prices=[257, 154, 148, 220],
+            profits=[24 * 257, 55 * 154, 76 * 148, 14 * 220]
+        )
+    )
+    # raise HTTPException(status_code=401)

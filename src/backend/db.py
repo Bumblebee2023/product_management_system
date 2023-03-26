@@ -46,7 +46,7 @@ def get_history_demand(name_product: str, id_market: str, time_window: dt.timede
 def get_product_categories():
     coll = _connect_mongo('markinghack')[f'transactions_6B8E111AB5B5C556C0AEA292ACA4D88B']
     prods = coll.distinct(key='id_product')
-    return prods
+    return prods[:50]
 
 
 if __name__ == "__main__":
