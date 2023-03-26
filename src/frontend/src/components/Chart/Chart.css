@@ -23,6 +23,7 @@
 
 .best-price {
     text-decoration: underline;
+    text-decoration-color: #ff6384;
 }
 
 .select-input {
@@ -31,4 +32,8 @@
     margin: 20px 0;
     border: 1px solid #000000;
     box-sizing: border-box;
+}
+
+.select {
+    margin: 20px 0;
 }

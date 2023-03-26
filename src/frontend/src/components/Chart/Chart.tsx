@@ -31,7 +31,7 @@ export const initialOptions = {
         },
         title: {
             display: true,
-            text: 'Chart',
+            text: 'График',
         },
     },
 };
@@ -56,23 +56,30 @@ export const initialData = {
     ],
 };
 
-export function Chart() {
+const durationOptions = [
+    { label: 'Краткосрочно', value: 'Краткосрочно' },
+    { label: 'Среднесрочно', value: 'Среднесрочно' },
+    { label: 'Долгосрочно', value: 'Долгосрочно' },
+]
+
+const Chart = () => {
     const [input, setInput] = useState("");
     const [product, setProduct] = useState("18AA2603B271C19A581133BD34319311");
+    const [duration, setDuration] = useState();
     const [dates, setDates] = useState([]);
     const [firstPrices, setFirstPrices] = useState([]);
     const [secondPrices, setSecondPrices] = useState([]);
     const [demands, setDemands] = useState([]);
     const [profits, setProfits] = useState([]);
     const [data, setData] = useState(initialData);
-    const [options, setOptions] = useState(['a', 'b', 'c']);
+    const [options, setOptions] = useState([]);
     const [chartOptions, setChartOptions] = useState();
     const [isDemandForecast, setDemandForecast] = useState(false);
     const [isOptimalPrice, setOptimalPrice] = useState(false);
-    const [bestPrice, setBestPrice] = useState(239);
+    const [bestPrice, setBestPrice] = useState(0);
 
     useEffect(() => {
-      fetch("84.201.153.183:8000/categories", {
+      fetch("http://84.201.153.183:8000/categories", {
           headers: {
               'Access-Control-Allow-Origin': '*'
           }
@@ -82,8 +89,7 @@ export function Chart() {
         })
         .then(data => {
           console.log(data);
-          setOptions(data);
-
+          setOptions(data.categories);
         });
     }, []);
 
@@ -98,17 +104,20 @@ export function Chart() {
     }, [options]);
 
     const handleDemandClick = () => {
+        console.log(product);
+        console.log(duration);
+        fetch('http://84.201.153.183:8000/')
+          .then((res) => console.log(res));
         fetch('http://84.201.153.183:8000/predict/demand', {
             method: "POST",
             mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': 'true'
             },
             body: JSON.stringify({
                 name_product: product,
-                type_predict: "краткосрочно",
+                type_predict: duration,
                 id_market: "6B8E111AB5B5C556C0AEA292ACA4D88B"
             })
         })
@@ -116,6 +125,7 @@ export function Chart() {
                 return response.json();
             })
             .then(function(response) {
+                console.log(response);
                 setDates(response.dates);
                 setDemands(response.demands);
             });
@@ -124,15 +134,16 @@ export function Chart() {
     };
 
     const handleOptimalPriceClick = () => {
-        fetch('http://84.201.153.183:8000/predict/profits', {
+        fetch('http://84.201.153.183:8000/predict/price', {
             method: "POST",
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
             },
             body: JSON.stringify({
                 name_product: product,
-                type_predict: "краткосрочно",
+                type_predict: duration,
                 id_market: "6B8E111AB5B5C556C0AEA292ACA4D88B"
             })
         })
@@ -156,7 +167,7 @@ export function Chart() {
                 labels: dates,
                 datasets: [
                     {
-                        label: 'Demands',
+                        label: 'Спрос',
                         data: demands,
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -169,7 +180,7 @@ export function Chart() {
                 labels: firstPrices,
                 datasets: [
                     {
-                        label: 'Demands',
+                        label: 'Спрос',
                         data: demands,
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -180,7 +191,7 @@ export function Chart() {
                 labels: secondPrices,
                 datasets: [
                     {
-                        label: 'Profits',
+                        label: 'Оборот',
                         data: profits,
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -202,28 +213,17 @@ export function Chart() {
         <>
           <div className='select-area'>
               <h2 className='title'>Выберите продукт</h2>
-              <input
-                  type='text'
-                  placeholder='Введите товар для анализа'
-                  className='select-input'
-                  onChange={(e) => {
-                  setInput(e.currentTarget.value);
-              }}/>
               <Select
-                isMulti={true}
                 options={chartOptions}
-                components={{
-                    MultiValueLabel: (props) => {
-                        return (
-                          <div onClick={() => {
-                              setProduct(props.data.value);
-                              console.log(props.data);
-                          }}>
-                              <components.MultiValueLabel {...props} />
-                          </div>
-                        );
-                    }
-                }}
+                autoFocus={true}
+                className='select'
+                onChange={(product) => setProduct(product.value)}
+              />
+              <Select
+                options={durationOptions}
+                autoFocus={true}
+                className='select'
+                onChange={(duration) => setDuration(duration.value)}
               />
               <div className='buttons'>
                   <button onClick={handleDemandClick}>Прогноз спроса</button>
@@ -235,3 +235,5 @@ export function Chart() {
         </>
     );
 }
+
+export default Chart;

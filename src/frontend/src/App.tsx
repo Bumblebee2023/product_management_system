@@ -1,8 +1,9 @@
 import React from 'react'
-import Chart from "./components/Chart";
+import Chart from "./components/Chart/Chart";
 import './styles/index.css';
 import Navbar from "./components/Navbar/Navbar";
 import FileReader from "./components/FileReader/FileReader";
+import Footer from "./components/Footer/Footer";
 
 const App = () => {
   return (
