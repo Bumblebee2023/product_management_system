@@ -1,8 +1,11 @@
 from sklearn.linear_model import LinearRegression
 import numpy as np
-from typing import List
+import torch
+import json
+from typing import List, Union
 
 from data import TimeSeria
+from lstm import Model
 
 
 class BaseModel:
@@ -24,11 +27,51 @@ class BaseModel:
         return self.model.predict(x_pred)
 
 
+class LstmFacade:
+    def __init__(self):
+        self.model = Model()
+        self.model.load_state_dict(torch.load("weights/epoch9.pt", map_location=torch.device('cpu')))
+        self.model.eval()
+        self.date_to_token = json.load(open("tokenizers/date_tokenizer.json"))
+        self.item_group_to_token = json.load(open("tokenizers/item_group_tokenizer.json"))
+        self.gtin_to_token = json.load(open("tokenizers/gtin_tokenizer.json"))
+        self.day_to_token = {
+            "Понедельник": 0,
+            "Вторник": 1,
+            "Среда": 2,
+            "Четверг": 3,
+            "Пятница": 4,
+            "Суббота": 5,
+            "Воскресенье": 6
+        }
+
+    def predict(self,
+                prev_values: List[float],
+                price: int,
+                gtin: str,
+                item_group: Union[str, float],
+                day_of_the_week: str,
+                date: str):
+        gtin = torch.Tensor([self.gtin_to_token[gtin]]).long()
+        day_of_the_week = torch.Tensor([self.day_to_token[day_of_the_week]]).long()
+        date = torch.Tensor([self.date_to_token[date]]).long()
+        if type(item_group) is float:
+            item_group = torch.Tensor([0]).long()
+        else:
+            item_group = torch.Tensor([self.item_group_to_token[item_group]]).long()
+        price = torch.Tensor([[price]])
+        prev_values = torch.Tensor([prev_values])
+        prev_values = prev_values.reshape(*prev_values.shape, 1)
+        with torch.no_grad():
+            s = self.model(prev_values, price, gtin, item_group, day_of_the_week, date).tolist()
+        return s[0][0]
+
+
 if __name__ == "__main__":
-    ts = TimeSeria()
-    ts.add_value(0, 0)
-    ts.add_value(2, 4)
-    ts.add_value(5, 25)
-    ts.add_value(6, 36)
-    m = BaseModel()
-    print(m.predict(ts, 10))
+    m = LstmFacade()
+    print(m.predict([50, 50, 50, 60, 50, 500, 40],
+                    10,
+                    "0E6D952FEFCA3542FF2E4EB72E544D6E",
+                    float("nan"),
+                    "Воскресенье",
+                    "03-26"))
