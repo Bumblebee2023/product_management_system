@@ -105,6 +105,15 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )]
+        if days_predict == 7:
+            answ = m.predict_medium(
+                [d[1] for d in data],
+                db.get_last_price(body.name_product),
+                body.name_product,
+                float("nan"),
+                strweek[pr_day.weekday()],
+                pr_day.strftime('%m-%d')
+            )
         # if days_predict == 7
         # ts = TimeSeria()
         # for i in range(len(history['dates'])):
