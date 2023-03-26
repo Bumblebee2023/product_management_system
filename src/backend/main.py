@@ -18,7 +18,8 @@ middleware = [
         allow_origins=['*'],
         allow_credentials=True,
         allow_methods=['*'],
-        allow_headers=['*']
+        allow_headers=['*'],
+        preflight_continue=True,
     )
 ]
 app_api = FastAPI(middleware=middleware)
