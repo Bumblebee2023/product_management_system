@@ -20,3 +20,59 @@ html, body {
     margin: 0 auto;
     border-radius: 10%;
 }
+
+button {
+    width: 250px;
+    height: 80px;
+    border: 5em;
+    cursor: pointer;
+    outline: none;
+    font-size: 16px;
+    font-family: 'Oswald', sans-serif;
+    -webkit-transform: translate(0);
+    transform: translate(0);
+    background-image: linear-gradient(45deg, #ebc751, #dc5858);
+    padding: 0.7em 2em;
+    border-radius: 15px;
+    box-shadow: 1px 1px 10px rgba(255, 255, 255, 0.438);
+    -webkit-transition: box-shadow 0.25s;
+    transition: box-shadow 0.25s;
+    color: white;
+}
+
+button .text {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(45deg, #ebc751, #dc5858);
+}
+
+button::after {
+    content: "";
+    border-radius: 15px;
+    position: absolute;
+    margin: 4px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+    background: #1a202c;
+}
+
+button:hover {
+    background-image: linear-gradient(135deg, #e5ca7a, #e32424);
+    box-shadow: 0 12px 24px rgba(128, 128, 128, 0.1);
+}
+
+button:hover .text {
+    background-image: linear-gradient(45deg, #ebc751, #dc5858);
+}
+
+.title {
+    display: flex;
+    justify-content: start;
+    font-size: 4.2rem;
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+}

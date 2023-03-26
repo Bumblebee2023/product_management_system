@@ -8,14 +8,6 @@
     flex: 0 0 50%;
 }
 
-.file-reader__title {
-    display: flex;
-    justify-content: start;
-    font-size: 4.2rem;
-    font-family: 'Oswald', sans-serif;
-    text-align: center;
-}
-
 .file-reader__input {
     display: flex;
     justify-content: end;
