@@ -30,11 +30,11 @@ class BaseModel:
 class LstmFacade:
     def __init__(self):
         self.model = Model()
-        self.model.load_state_dict(torch.load("weights/epoch9.pt", map_location=torch.device('cpu')))
+        self.model.load_state_dict(torch.load("ml/weights/epoch9.pt", map_location=torch.device('cpu')))
         self.model.eval()
-        self.date_to_token = json.load(open("tokenizers/date_tokenizer.json"))
-        self.item_group_to_token = json.load(open("tokenizers/item_group_tokenizer.json"))
-        self.gtin_to_token = json.load(open("tokenizers/gtin_tokenizer.json"))
+        self.date_to_token = json.load(open("ml/tokenizers/date_tokenizer.json"))
+        self.item_group_to_token = json.load(open("ml/tokenizers/item_group_tokenizer.json"))
+        self.gtin_to_token = json.load(open("ml/tokenizers/gtin_tokenizer.json"))
         self.day_to_token = {
             "Понедельник": 0,
             "Вторник": 1,

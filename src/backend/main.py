@@ -104,6 +104,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )]
+        # if days_predict == 7
         # ts = TimeSeria()
         # for i in range(len(history['dates'])):
         #     ts.add_value(history['dates'][i], history['demands'][i])
