@@ -105,7 +105,12 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )]
-        if days_predict == 7:
+            resp = models.PredictDemandResponse(
+                dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in
+                                              range(days_predict)],
+                demands=[d[1] for d in data] + answ
+            )
+        elif days_predict == 7:
             answ = m.predict_medium(
                 [d[1] for d in data],
                 db.get_last_price(body.name_product),
@@ -114,6 +119,11 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
                 strweek[pr_day.weekday()],
                 pr_day.strftime('%m-%d')
             )
+            resp = models.PredictDemandResponse(
+                dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in
+                                              range(days_predict)],
+                demands=[d[1] for d in data] + [answ[k] for k in sorted(answ.keys())]
+            )
         # if days_predict == 7
         # ts = TimeSeria()
         # for i in range(len(history['dates'])):
@@ -121,10 +131,7 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
         #
         # predict = list(map(int, BaseModel().predict(ts, days_predict)))
         now = dt.date.today()
-        resp = models.PredictDemandResponse(
-            dates=[d[0] for d in data] + [(pr_day + dt.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days_predict)],
-            demands=[d[1] for d in data] + answ
-        )
+
 
         return resp
     except Exception as e:
