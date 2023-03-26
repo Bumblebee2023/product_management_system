@@ -1,0 +1,34 @@
+.select-area {
+    padding-top: 50px;
+    border-bottom: 2px solid #1a202c;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.price {
+    display: flex;
+    justify-content: start;
+    font-size: 4.2rem;
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+}
+
+.price__title {
+    margin-right: 20px;
+}
+
+.best-price {
+    text-decoration: underline;
+}
+
+.select-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 20px 0;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
