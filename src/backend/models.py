@@ -27,3 +27,7 @@ class PredictPriceResponse(BaseModel):
     demand: _Demand
     profit: _Profit
     best_price: int
+
+
+class Categories(BaseModel):
+    categories: List[str]

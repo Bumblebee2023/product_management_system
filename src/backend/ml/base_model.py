@@ -4,8 +4,8 @@ import torch
 import json
 from typing import List, Union
 
-from data import TimeSeria
-from lstm import Model
+from .data import TimeSeria
+from .lstm import Model
 
 
 class BaseModel:

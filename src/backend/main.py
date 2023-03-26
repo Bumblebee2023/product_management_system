@@ -1,7 +1,7 @@
 import datetime as dt
 from random import randint
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import bestconfig
@@ -19,11 +19,20 @@ origins = ["*"]
 
 app_api.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app_api.options("/{path:path}")
+async def options_handler(request: Request, path: str):
+    return Response(headers={
+        "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
+        "Access-Control-Allow-Methods": ",".join(app_api.routes.get(path, [])[0].methods),
+        "Access-Control-Allow-Headers": "*",
+    })
 
 
 @app_api.get('/')
@@ -35,12 +44,12 @@ def home():
 @app_api.post('/predict/demand')
 def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
     # TODO implement function
-    days_predict = utils.get_days_by_type_predict(body.type_predict)
-
-    history = db.get_history_demand(body.name_product,
-                                    body.id_market,
-                                    dt.timedelta(days=int(config.int('time-window-years')) * 365))
     try:
+        days_ago, days_predict = utils.get_days_by_type_predict(body.type_predict)
+
+        history = db.get_history_demand(body.name_product,
+                                        body.id_market,
+                                        dt.timedelta(days=int(config.int('time-window-years')) * 365))
         ts = TimeSeria()
         for i in range(len(history['dates'])):
             ts.add_value(history['dates'][i], history['demands'][i])
@@ -59,6 +68,11 @@ def predict_demand(body: models.PredictRequest) -> models.PredictDemandResponse:
             dates=[],
             demands=[]
         )
+
+
+@app_api.get('/categories')
+def categories() -> models.Categories:
+    return models.Categories(categories=db.get_product_categories())
 
 
 @app_api.post('/predict/price')

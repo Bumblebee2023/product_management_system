@@ -9,11 +9,11 @@ def data_in_int(data):
 def get_days_by_type_predict(type_predict: str):
     type_predict = type_predict.lower().strip()
     if type_predict.startswith('долго'):
-        days_predict = 365
+        days_predict = (150, 30)
     elif type_predict.startswith('средне'):
-        days_predict = 150
+        days_predict = (30, 7)
     elif type_predict.startswith('кратко'):
-        days_predict = 30
+        days_predict = (7, 1)
     else:
         return None
     return days_predict
