@@ -118,6 +118,7 @@ def predict_price(body: models.PredictRequest) -> models.PredictPriceResponse:
         profit=models._Profit(
             prices=[257, 154, 148, 220],
             profits=[24 * 257, 55 * 154, 76 * 148, 14 * 220]
-        )
+        ),
+        best_price=148
     )
     # raise HTTPException(status_code=401)
