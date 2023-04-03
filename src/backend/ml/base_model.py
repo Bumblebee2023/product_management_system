@@ -3,6 +3,8 @@ import numpy as np
 import torch
 import json
 from typing import List, Union
+import pickle
+import pandas as pd
 
 from .data import TimeSeria
 from .lstm import Model
@@ -29,21 +31,7 @@ class BaseModel:
 
 class LstmFacade:
     def __init__(self):
-        self.model = Model()
-        self.model.load_state_dict(torch.load("ml/weights/epoch9.pt", map_location=torch.device('cpu')))
-        self.model.eval()
-        self.date_to_token = json.load(open("ml/tokenizers/date_tokenizer.json"))
-        self.item_group_to_token = json.load(open("ml/tokenizers/item_group_tokenizer.json"))
-        self.gtin_to_token = json.load(open("ml/tokenizers/gtin_tokenizer.json"))
-        self.day_to_token = {
-            "Понедельник": 0,
-            "Вторник": 1,
-            "Среда": 2,
-            "Четверг": 3,
-            "Пятница": 4,
-            "Суббота": 5,
-            "Воскресенье": 6
-        }
+        self.model = pickle.load(open("weights/cv_reg.pkl", "rb"))
 
     def predict(self,
                 prev_values: List[float],
@@ -52,19 +40,16 @@ class LstmFacade:
                 item_group: Union[str, float],
                 day_of_the_week: str,
                 date: str):
-        gtin = torch.Tensor([self.gtin_to_token[gtin]]).long()
-        day_of_the_week = torch.Tensor([self.day_to_token[day_of_the_week]]).long()
-        date = torch.Tensor([self.date_to_token[date]]).long()
-        if type(item_group) is float:
-            item_group = torch.Tensor([0]).long()
-        else:
-            item_group = torch.Tensor([self.item_group_to_token[item_group]]).long()
-        price = torch.Tensor([[price]])
-        prev_values = torch.Tensor([prev_values])
-        prev_values = prev_values.reshape(*prev_values.shape, 1)
-        with torch.no_grad():
-            s = self.model(prev_values, price, gtin, item_group, day_of_the_week, date).tolist()
-        return s[0][0]
+        data = pd.DataFrame({"price": [price],
+                             "day_of_week": [day_of_the_week],
+                             "prev_val_1": [prev_values[0]],
+                             "prev_val_2": [prev_values[1]],
+                             "prev_val_3": [prev_values[2]],
+                             "prev_val_4": [prev_values[3]],
+                             "prev_val_5": [prev_values[4]],
+                             "prev_val_6": [prev_values[5]],
+                             "prev_val_7": [prev_values[6]]})
+        return self.model.predict(data)[0]
 
     def increase_date(self, date: str):
         date = self.date_to_token[date]
@@ -131,7 +116,7 @@ class LstmFacade:
 if __name__ == "__main__":
     m = LstmFacade()
     print(m.optimize_price([50, 50, 50, 60, 50, 500, 40],
-                         "7ACB2C0B5F5F20DE7F9908753C25DE91",
-                         float("nan"),
-                         "Воскресенье",
-                         "03-26"))
+                           "7ACB2C0B5F5F20DE7F9908753C25DE91",
+                           float("nan"),
+                           "Воскресенье",
+                           "03-26"))
