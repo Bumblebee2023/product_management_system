@@ -32,6 +32,18 @@ class BaseModel:
 class LstmFacade:
     def __init__(self):
         self.model = pickle.load(open("weights/cv_reg.pkl", "rb"))
+        self.date_to_token = json.load(open("ml/tokenizers/date_tokenizer.json"))
+        self.item_group_to_token = json.load(open("ml/tokenizers/item_group_tokenizer.json"))
+        self.gtin_to_token = json.load(open("ml/tokenizers/gtin_tokenizer.json"))
+        self.day_to_token = {
+            "Понедельник": 0,
+            "Вторник": 1,
+            "Среда": 2,
+            "Четверг": 3,
+            "Пятница": 4,
+            "Суббота": 5,
+            "Воскресенье": 6
+        }
 
     def predict(self,
                 prev_values: List[float],
